@@ -2,6 +2,7 @@ package com.example.calculator;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,18 @@ import com.example.calculator.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
+    class CalculatorClickHandler implements View.OnClickListener{
+
+        @Override
+        public void onClick(View view){
+            String tag = ((Button) view).getTag().toString();
+            Toast toast = Toast.makeText(binding.getRoot().getContext(), tag, Toast.LENGTH_SHORT);
+            toast.show();
+            // INSERT EVENT HANDLING CODE HERE
+        }
+
+    }
+
     private ActivityMainBinding binding;
 
     @Override
@@ -21,16 +34,14 @@ public class MainActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        class CalculatorClickHandler implements View.OnClickListener{
+        CalculatorClickHandler click = new CalculatorClickHandler();
+        ConstraintLayout layout = binding.ConstraintLayout;
 
-            @Override
-            public void onClick(View view){
-                String tag = ((Button) view).getTag().toString();
-                Toast toast = Toast.makeText(binding.getRoot().getContext(), tag, Toast.LENGTH_SHORT);
-                toast.show();
-                // INSERT EVENT HANDLING CODE HERE
+        for (int i = 0; i < layout.getChildCount(); ++i) {
+            View child = layout.getChildAt(i);
+            if(child instanceof Button) {
+                child.setOnClickListener(click);
             }
-
         }
     }
 }
