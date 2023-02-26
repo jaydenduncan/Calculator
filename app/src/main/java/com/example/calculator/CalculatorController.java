@@ -29,8 +29,8 @@ public class CalculatorController extends AbstractController
      * This is the change method which corresponds to ELEMENT_TEXT2_PROPERTY.
      */
 
-    public void changeScreen(String newText) {
-        setModelProperty(SCREEN_PROPERTY, newText);
+    public void changeScreen(String tag) {
+        setModelProperty(SCREEN_PROPERTY, tag);
     }
 
 }

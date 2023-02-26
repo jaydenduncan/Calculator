@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 public class MainActivity extends AppCompatActivity implements AbstractView {
 
     public static final String TAG = "MainActivity";
+    public static final int DIGIT_CHAR_LENGTH = 27;
 
 
     private ActivityMainBinding binding;
@@ -110,6 +111,12 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
 
             String tag = ((Button) v).getTag().toString();
 
+            String text = binding.displayTextView.getText().toString();
+
+            if(text.length() <= DIGIT_CHAR_LENGTH){
+                controller.changeScreen(tag);
+            }
+
             /*
             if (tag.equals("btn1")) {
                 String newText = binding.displayTextView.getText().toString();
@@ -122,10 +129,12 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
             }
             */
 
-            if(tag.length() == DIGIT_CHAR_LENGTH){
-
+            /*
+            if(tag.length() >= DIGIT_CHAR_LENGTH){
+                String newText = "4";
+                controller.changeScreen(newText);
             }
-
+            */
 
         }
 

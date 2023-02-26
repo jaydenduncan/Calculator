@@ -14,20 +14,20 @@ public class CalculatorModel extends AbstractModel {
 
     private BigDecimal lhs, rhs;
 
+    private String operator;
+
+    private boolean decimal;
+
     public CalculatorModel(){
 
         screen = new StringBuilder();
+        state = CalculatorState.CLEAR;
+        lhs = new BigDecimal(0);
+        rhs = new BigDecimal(0);
+        operator = null;
+        decimal = false;
 
     }
-
-    /*
-     * This is a simple implementation of an AbstractModel which encapsulates
-     * two text fields, text1 and text2, which (in this example) are each
-     * reflected in the View as an EditText field and a TextView label.
-     */
-
-    private String text1;
-    private String text2;
 
     /*
      * Initialize the model elements to known default values.  We use the setter
@@ -42,10 +42,6 @@ public class CalculatorModel extends AbstractModel {
 
     }
 
-    /*
-     * Simple getter methods for text1 and text2
-     */
-
 
     /*
      * Setters for text1 and text2.  Notice that, in addition to changing the
@@ -55,6 +51,68 @@ public class CalculatorModel extends AbstractModel {
      * they can update themselves accordingly.
      */
 
+    public void setScreen(String tag){
+
+        switch(tag){
+            case "btn1": case "btn2": case "btn3": case "btn4": case "btn5": case "btn6":
+            case "btn7": case "btn8": case "btn9": case "btn0":
+                if(state == CalculatorState.CLEAR){
+                    // change state to lhs
+                    changeState(CalculatorState.LHS);
+
+                    // append proper number to the screen
+                    setKey(tag.charAt(3));
+                }
+                else if(state == CalculatorState.LHS){
+                    setKey(tag.charAt(3));
+                }
+                else if(state == CalculatorState.OP_SELECTED){
+                    changeState(CalculatorState.RHS);
+                }
+                else{
+                    changeState(CalculatorState.LHS);
+                }
+                break;
+            case "btnC":
+                // change state to clear
+                changeState(CalculatorState.CLEAR);
+
+                // clear the screen
+                screen.delete(0, screen.length());
+
+                // place 0 as placeholder
+                String oldText = screen.toString();
+                String newText = "0";
+                firePropertyChange(CalculatorController.SCREEN_PROPERTY, oldText, newText);
+                break;
+            case "btnDec":
+                // place decimal in input if allowed
+                if(!(screen.toString().contains("."))) {
+                    setKey('.');
+                }
+                break;
+            case "btnPlusMin":
+                String oldNumText = screen.toString();
+                String newNumText = "";
+
+                // toggle positive and negative input
+                if(oldNumText.contains("-")){
+                    newNumText = oldNumText.substring(1);
+                }
+                else{
+                    newNumText = screen.insert(0, "-").toString();
+                }
+
+                // replace StringBuilder buffer
+                screen.delete(0, screen.length());
+                screen.append(newNumText);
+
+                firePropertyChange(CalculatorController.SCREEN_PROPERTY, oldNumText, newNumText);
+                break;
+        }
+
+    }
+
     public void setKey(Character digit){
 
         appendDigit(digit.charValue());
@@ -63,13 +121,18 @@ public class CalculatorModel extends AbstractModel {
 
     private void changeState(CalculatorState newState){
 
-        // INSERT CODE HERE
+        state = newState;
 
     }
 
     public void appendDigit(char digit) {
 
         String oldText = screen.toString();
+
+        if(oldText.equals("0")){
+            screen.deleteCharAt(0);
+        }
+
         screen.append(digit);
         String newText = screen.toString();
 
