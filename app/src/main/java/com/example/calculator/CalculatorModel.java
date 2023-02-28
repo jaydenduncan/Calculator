@@ -210,6 +210,64 @@ public class CalculatorModel extends AbstractModel {
 
                 break;
 
+            case "btnSqrt":
+
+                // store lhs or rhs
+                if(state == CalculatorState.LHS){
+
+                    tempDouble = Double.valueOf(screen.toString());
+                    lhs = new BigDecimal(tempDouble);
+
+                    if(screen.toString().contains(".")){
+                        tempDouble = Double.valueOf(screen.toString());
+                        lhs = new BigDecimal(tempDouble);
+                    }
+                    else{
+                        tempLong = Long.valueOf(screen.toString());
+                        lhs = new BigDecimal(tempLong);
+                    }
+
+                }
+                else if(state == CalculatorState.RHS){
+
+                    tempDouble = Double.valueOf(screen.toString());
+                    rhs = new BigDecimal(tempDouble);
+
+
+                    if(screen.toString().contains(".")){
+                        tempDouble = Double.valueOf(screen.toString());
+                        rhs = new BigDecimal(tempDouble);
+                    }
+                    else{
+                        tempLong = Long.valueOf(screen.toString());
+                        rhs = new BigDecimal(tempLong);
+                    }
+
+                }
+
+                // calculate square root of lhs or rhs
+                result = String.valueOf(calculateSqrt());
+
+                // make result the new lhs or rhs
+                if(state == CalculatorState.LHS){
+                    lhs = new BigDecimal(result);
+                }
+                else if(state == CalculatorState.RHS) {
+                    rhs = new BigDecimal(result);
+                }
+
+
+                // clear the screen
+                clearScreen();
+
+                // display the result on the screen
+                displayResult(result);
+
+                // replace the screen buffer with result
+                screen.replace(0, screen.length(), result);
+
+                break;
+
             case "btnEqual":
 
                 if(screen.toString().contains(".")){
@@ -281,6 +339,7 @@ public class CalculatorModel extends AbstractModel {
 
             screen.append('0');
 
+
             // place 0 as placeholder in screen
             firePropertyChange(CalculatorController.SCREEN_PROPERTY, oldText, "0");
         }
@@ -292,6 +351,33 @@ public class CalculatorModel extends AbstractModel {
 
     }
 
+    private double calculateSqrt(){
+
+        BigDecimal result = null;
+
+        if(state == CalculatorState.LHS){
+
+            double tempResult = Math.pow(lhs.doubleValue(), 0.5);
+            result = new BigDecimal(tempResult);
+
+            Log.i(TAG, "Result: " + result.toString()); // ERROR CHECK
+
+            return result.doubleValue();
+        }
+        else if(state == CalculatorState.RHS){
+            double tempResult = Math.pow(rhs.doubleValue(), 0.5);
+            result = new BigDecimal(tempResult);
+
+            Log.i(TAG, "Result: " + result.toString()); // ERROR CHECK
+
+            return result.doubleValue();
+        }
+
+        return result.doubleValue();
+
+    }
+
+
     private double calculateResult(){
         BigDecimal result = null;
 
@@ -301,8 +387,6 @@ public class CalculatorModel extends AbstractModel {
 
                 result = lhs.add(rhs);
                 result.setScale(2, RoundingMode.HALF_UP);
-
-
 
                 return result.doubleValue();
 
