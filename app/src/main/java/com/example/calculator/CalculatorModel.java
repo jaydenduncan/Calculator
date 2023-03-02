@@ -20,15 +20,7 @@ public class CalculatorModel extends AbstractModel {
     private String result;
 
 
-    public CalculatorModel(){
 
-        screen = new StringBuilder();
-        state = CalculatorState.CLEAR;
-        lhs = new BigDecimal(0);
-        rhs = new BigDecimal(0);
-        operator = null;
-
-    }
 
     /*
      * Initialize the model elements to known default values.  We use the setter
@@ -38,6 +30,12 @@ public class CalculatorModel extends AbstractModel {
      */
 
     public void init() {
+
+        screen = new StringBuilder();
+        state = CalculatorState.CLEAR;
+        lhs = new BigDecimal(0);
+        rhs = new BigDecimal(0);
+        operator = null;
 
         appendDigit('0');
 
@@ -261,7 +259,7 @@ public class CalculatorModel extends AbstractModel {
                 clearScreen();
 
                 // display the result on the screen
-                displayResult(result);
+                display(result);
 
                 // replace the screen buffer with result
                 screen.replace(0, screen.length(), result);
@@ -290,7 +288,7 @@ public class CalculatorModel extends AbstractModel {
 
                 clearScreen();
 
-                displayResult(result);
+                display(result);
 
                 lhs = new BigDecimal(result);
 
@@ -416,7 +414,7 @@ public class CalculatorModel extends AbstractModel {
 
     }
 
-    private void displayResult(String result){
+    private void display(String result){
 
         String oldText = screen.toString();
 

@@ -117,24 +117,6 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
                 controller.changeScreen(tag);
             }
 
-            /*
-            if (tag.equals("btn1")) {
-                String newText = binding.displayTextView.getText().toString();
-                controller.changeScreen(newText);
-            }
-
-            else if (tag.equals("btn2")) {
-                String newText = binding.displayTextView.getText().toString();
-                controller.changeScreen(newText);
-            }
-            */
-
-            /*
-            if(tag.length() >= DIGIT_CHAR_LENGTH){
-                String newText = "4";
-                controller.changeScreen(newText);
-            }
-            */
 
         }
 
