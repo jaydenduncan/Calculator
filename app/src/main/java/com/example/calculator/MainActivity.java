@@ -7,9 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.calculator.databinding.ActivityMainBinding;
+
 import java.beans.PropertyChangeEvent;
 
-import edu.jsu.mcis.cs408.androidmvctest.databinding.ActivityMainBinding;
+//import edu.jsu.mcis.cs408.androidmvctest.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity implements AbstractView {
 
@@ -17,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
 
     private ActivityMainBinding binding;
 
-    private DefaultController controller;
+    private CalculatorController controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +32,8 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
 
         /* Create Controller and Model */
 
-        controller = new DefaultController();
-        DefaultModel model = new DefaultModel();
+        controller = new CalculatorController();
+        CalculatorModel model = new CalculatorModel();
 
         /* Register Activity View and Model with Controller */
 
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
 
         /* Initialize Model to Default Values */
 
-        model.initDefault();
+        model.init();
 
         /* Associate Click Handler with Input Buttons */
 
@@ -69,22 +72,12 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
 
         Log.i(TAG, "New " + propertyName + " Value from Model: " + propertyValue);
 
-        if ( propertyName.equals(DefaultController.ELEMENT_TEXT1_PROPERTY) ) {
+        if ( propertyName.equals(CalculatorController.SCREEN_PROPERTY) ) {
 
-            String oldPropertyValue = binding.outputText1.getText().toString();
-
-            if ( !oldPropertyValue.equals(propertyValue) ) {
-                binding.outputText1.setText(propertyValue);
-            }
-
-        }
-
-        else if ( propertyName.equals(DefaultController.ELEMENT_TEXT2_PROPERTY) ) {
-
-            String oldPropertyValue = binding.outputText2.getText().toString();
+            String oldPropertyValue = binding.displayTextView.getText().toString();
 
             if ( !oldPropertyValue.equals(propertyValue) ) {
-                binding.outputText2.setText(propertyValue);
+                binding.displayTextView.setText(propertyValue);
             }
 
         }
@@ -96,22 +89,7 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
         @Override
         public void onClick(View v) {
 
-            /*
-             * When the "Change" buttons are clicked, inform the controller of an input field
-             * change, so that the Model(s) can be updated accordingly.
-             */
-
-            String tag = ((Button) v).getTag().toString();
-
-            if (tag.equals("inputButton1")) {
-                String newText = binding.inputText1.getText().toString();
-                controller.changeElementText1(newText);
-            }
-
-            else if (tag.equals("inputButton2")) {
-                String newText = binding.inputText2.getText().toString();
-                controller.changeElementText2(newText);
-            }
+            //INSERT CODE HERE
 
         }
 
