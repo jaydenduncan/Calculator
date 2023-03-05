@@ -59,6 +59,22 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        Log.i(TAG, "onSaveInstanceState");
+        String displayText = binding.displayTextView.getText().toString();
+        outState.putString("displayText", displayText);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.i(TAG, "onRestoreInstanceState");
+        String displayText = savedInstanceState.getString("displayText");
+        binding.displayTextView.setText(displayText);
+    }
+
+    @Override
     public void modelPropertyChange(final PropertyChangeEvent evt) {
 
         /*

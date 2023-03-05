@@ -309,6 +309,17 @@ public class CalculatorModel extends AbstractModel {
 
     }
 
+    public void displayError(){
+
+        lhs = null;
+        rhs = null;
+        result = null;
+        state = CalculatorState.ERROR;
+        display("", ERROR);
+        Log.i(TAG, "State Change: " + state);
+
+    }
+
     private void calculateSqrt(){
 
         String oldText = buffer.toString();
@@ -365,12 +376,7 @@ public class CalculatorModel extends AbstractModel {
         }
         catch(Exception e){
             e.printStackTrace();
-            lhs = null;
-            rhs = null;
-            result = null;
-            state = CalculatorState.ERROR;
-            display("", ERROR);
-            Log.i(TAG, "State Change: " + state);
+            displayError();
         }
 
 
@@ -413,12 +419,7 @@ public class CalculatorModel extends AbstractModel {
         }
         catch(Exception e){
             e.printStackTrace();
-            lhs = null;
-            rhs = null;
-            result = null;
-            state = CalculatorState.ERROR;
-            display("", ERROR);
-            Log.i(TAG, "State Change: " + state);
+            displayError();
         }
 
     }
@@ -469,12 +470,7 @@ public class CalculatorModel extends AbstractModel {
         }
         catch(Exception e){
             e.printStackTrace();
-            lhs = null;
-            rhs = null;
-            result = null;
-            state = CalculatorState.ERROR;
-            display("", ERROR);
-            Log.i(TAG, "State Change: " + state);
+            displayError();
         }
 
     }
