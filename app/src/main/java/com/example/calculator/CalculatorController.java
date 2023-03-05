@@ -42,6 +42,7 @@ public class CalculatorController extends AbstractController
         functionMap.put("btnSub", CalculatorFunction.SUBTRACT);
         functionMap.put("btnMul", CalculatorFunction.MULTIPLY);
         functionMap.put("btnDiv", CalculatorFunction.DIVIDE);
+        functionMap.put("btnSqrt", CalculatorFunction.SQRT);
 
     }
 

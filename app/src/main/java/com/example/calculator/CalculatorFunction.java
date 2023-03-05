@@ -6,7 +6,8 @@ public enum CalculatorFunction {
     ADD("+"),
     SUBTRACT("-"),
     MULTIPLY("x"),
-    DIVIDE("/");
+    DIVIDE("/"),
+    SQRT("sqrt");
 
     public final String operation;
 

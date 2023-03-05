@@ -3,12 +3,14 @@ package com.example.calculator;
 import android.util.Log;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CalculatorModel extends AbstractModel {
 
     public static final String TAG = "CalculatorModel";
+    public static final String ERROR = "ERROR";
 
     private StringBuilder buffer;
     private CalculatorState state;
@@ -71,15 +73,23 @@ public class CalculatorModel extends AbstractModel {
             case "btn7": case "btn8": case "btn9": case "btn0": case "btnDec":
                 changeState(tag);
                 processInput(tag);
-
                 break;
-            case "btnC":
+            case "btnC": case "btnAdd": case "btnSub": case "btnMul": case "btnDiv":
                 changeState(tag);
                 processInput(tag);
+                break;
+            case "btnSqrt":
+                processInput(tag);
+                calculateSqrt();
 
                 break;
             case "btnPlusMin":
                 processInput(tag);
+                break;
+            case "btnEqual":
+                changeState(tag);
+                evaluate();
+                lhs = result;
                 break;
 
         }
@@ -111,6 +121,18 @@ public class CalculatorModel extends AbstractModel {
             case CLEAR:
                 init();
                 Log.i(TAG, "State Change: " + state);
+                break;
+            case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE:
+                operator = function.operation;
+                Log.i(TAG, "Function Change: " + function);
+                Log.i(TAG, "Operator: " + operator);
+                break;
+            case SQRT:
+                if(state == CalculatorState.LHS){
+                    operator = function.operation;
+                    Log.i(TAG, "Function Change: " + function);
+                    Log.i(TAG, "Operator: " + operator);
+                }
                 break;
 
         }
@@ -152,6 +174,7 @@ public class CalculatorModel extends AbstractModel {
 
     private void clearBuffer(){
 
+        hasDecimal = false;
         buffer.setLength(0);
 
     }
@@ -162,7 +185,6 @@ public class CalculatorModel extends AbstractModel {
         switch(state){
 
             case CLEAR:
-
                 if(operators.contains(tag)){
                     state = CalculatorState.OP_SELECTED;
                 }
@@ -175,35 +197,103 @@ public class CalculatorModel extends AbstractModel {
                     state = CalculatorState.LHS;
                 }
 
-                Log.i(TAG, "State Change: " + state);
+                break;
+            case LHS:
+                if(operators.contains(tag)){
+                    lhs = new BigDecimal(buffer.toString());
+                    state = CalculatorState.OP_SELECTED;
+                }
+                else if(tag.equals("btnSqrt")){
+                    lhs = new BigDecimal(buffer.toString());
+                    state = CalculatorState.RESULT;
+                }
+                else if(tag.equals("btnEqual")) {
+                    lhs = new BigDecimal(buffer.toString());
+                    evaluate();
+                    lhs = result;
+                    state = CalculatorState.RESULT;
+                }
 
                 break;
+            case OP_SELECTED:
+                if(keyMap.containsKey(tag)){
+                    clearBuffer();
+                    clearScreen();
+                    state = CalculatorState.RHS;
+                }
+                else if(tag.equals("btnEqual")){
+                    rhs = lhs;
+                    clearBuffer();
+                    clearScreen();
+                    state = CalculatorState.RESULT;
+                }
 
-            case LHS:
+                break;
+            case RHS:
+                if(tag.equals("btnEqual")){
+                    rhs = new BigDecimal(buffer.toString());
+                    state = CalculatorState.RESULT;
+                }
+
+                break;
+            case RESULT:
+
+                if(keyMap.containsKey(tag)){
+                    clearBuffer();
+                    clearScreen();
+
+                    if(tag.equals("btnDec")){
+                        buffer.append("0");
+                        display(buffer.toString(), "0");
+                    }
+
+                    state = CalculatorState.LHS;
+                }
+                else if(operators.contains(tag)){
+                    state = CalculatorState.OP_SELECTED;
+                }
+
+                break;
+            case ERROR:
 
                 if(operators.contains(tag)){
                     state = CalculatorState.OP_SELECTED;
                 }
-                else if(tag.equals("btnEqual")){
-                    state = CalculatorState.RESULT;
+                else if(keyMap.containsKey(tag)){
+                    clearBuffer();
+                    clearScreen();
+                    state = CalculatorState.LHS;
                 }
-
-                Log.i(TAG, "State Change: " + state);
 
                 break;
 
         }
 
+        Log.i(TAG, "State Change: " + state);
+
     }
 
     private void negate(){
         String oldText = buffer.toString();
-        clearBuffer();
 
         switch(state){
             case LHS:
                 lhs = new BigDecimal(oldText);
                 lhs = lhs.negate();
+                clearBuffer();
+                buffer.append(lhs.toString());
+                display(oldText, buffer.toString());
+                break;
+            case RHS:
+                rhs = new BigDecimal(oldText);
+                rhs = rhs.negate();
+                clearBuffer();
+                buffer.append(rhs.toString());
+                display(oldText, buffer.toString());
+                break;
+            case RESULT:
+                lhs = lhs.negate();
+                clearBuffer();
                 buffer.append(lhs.toString());
                 display(oldText, buffer.toString());
                 break;
@@ -211,9 +301,126 @@ public class CalculatorModel extends AbstractModel {
 
     }
 
-    private void evaluate(){
+    private void calculateSqrt(){
 
-        //INSERT CODE HERE
+        String oldText = buffer.toString();
+        double temp;
+
+        try{
+
+            switch(state) {
+
+                case LHS:
+                    state = CalculatorState.RESULT;
+
+                    lhs = new BigDecimal(buffer.toString());
+                    temp = lhs.doubleValue();
+                    temp = Math.pow(temp, 0.5);
+                    result = new BigDecimal(temp, MathContext.DECIMAL64);
+
+                    lhs = result;
+                    display(oldText, result.toString());
+
+                    break;
+                case RHS:
+                    rhs = new BigDecimal(buffer.toString());
+                    temp = rhs.doubleValue();
+                    temp = Math.pow(temp, 0.5);
+                    rhs = new BigDecimal(temp, MathContext.DECIMAL64);
+                    clearBuffer();
+                    buffer.append(rhs.toString());
+
+                    display(oldText, rhs.toString());
+
+                    break;
+                case RESULT:
+                    temp = lhs.doubleValue();
+                    temp = Math.pow(temp, 0.5);
+                    result = new BigDecimal(temp, MathContext.DECIMAL64);
+
+                    lhs = result;
+                    display(oldText, result.toString());
+
+                    break;
+                case OP_SELECTED:
+                    state = CalculatorState.RHS;
+                    temp = lhs.doubleValue();
+                    temp = Math.pow(temp, 0.5);
+                    result = new BigDecimal(temp, MathContext.DECIMAL64);
+                    rhs = result;
+
+                    display(oldText, result.toString());
+
+                    break;
+            }
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            lhs = null;
+            rhs = null;
+            result = null;
+            state = CalculatorState.ERROR;
+            display("", ERROR);
+            Log.i(TAG, "State Change: " + state);
+        }
+
+
+    }
+
+    private void evaluate(){
+        String oldText = buffer.toString();
+
+        if(!(lhs == null) && !(rhs == null))
+            Log.i(TAG, "LHS: " + lhs.toString() + "| RHS: " + rhs.toString());
+
+        try{
+
+            if(!(operator == null)){
+
+                switch(operator){
+
+                    case "+":
+                        result = lhs.add(rhs);
+                        display(oldText, result.toString());
+                        break;
+                    case "-":
+                        result = lhs.subtract(rhs);
+                        display(oldText, result.toString());
+                        break;
+                    case "x":
+                        result = lhs.multiply(rhs);
+                        display(oldText, result.toString());
+                        break;
+                    case "/":
+                        result = lhs.divide(rhs, MathContext.DECIMAL64);
+                        display(oldText, result.toString());
+                        break;
+                    case "sqrt":
+                        double number = result.doubleValue();
+                        double doubleResult = Math.pow(number, 0.5);
+                        result = new BigDecimal(doubleResult, MathContext.DECIMAL64);
+                        display(oldText, result.toString());
+                        break;
+
+                }
+
+            }
+            else{
+                result = lhs;
+                display(oldText, result.toString());
+            }
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            lhs = null;
+            rhs = null;
+            result = null;
+            state = CalculatorState.ERROR;
+            display("", ERROR);
+            Log.i(TAG, "State Change: " + state);
+        }
 
     }
 
