@@ -81,7 +81,9 @@ public class CalculatorModel extends AbstractModel {
             case "btnSqrt":
                 processInput(tag);
                 calculateSqrt();
-
+                break;
+            case "btnPerc":
+                calculatePercent();
                 break;
             case "btnPlusMin":
                 processInput(tag);
@@ -219,6 +221,12 @@ public class CalculatorModel extends AbstractModel {
                 if(keyMap.containsKey(tag)){
                     clearBuffer();
                     clearScreen();
+
+                    if(tag.equals("btnDec")){
+                        buffer.append("0");
+                        display(buffer.toString(), "0");
+                    }
+
                     state = CalculatorState.RHS;
                 }
                 else if(tag.equals("btnEqual")){
@@ -365,6 +373,53 @@ public class CalculatorModel extends AbstractModel {
             Log.i(TAG, "State Change: " + state);
         }
 
+
+    }
+
+    private void calculatePercent(){
+
+        String oldText = buffer.toString();
+        BigDecimal percent = BigDecimal.ZERO;
+        BigDecimal decimalPerc = BigDecimal.ZERO;
+
+        try{
+            switch(state){
+
+                case LHS: case RESULT:
+                    state = CalculatorState.RESULT;
+                    lhs = new BigDecimal(buffer.toString());
+                    result = lhs.divide(new BigDecimal(100), MathContext.DECIMAL64);
+                    lhs = result;
+                    clearBuffer();
+                    buffer.append(lhs.toString());
+
+                    display(oldText, result.toString());
+                    break;
+                case OP_SELECTED:
+                    break;
+                case RHS:
+                    percent = new BigDecimal(buffer.toString());
+                    decimalPerc = percent.divide(new BigDecimal(100), MathContext.DECIMAL64);
+                    rhs = lhs.multiply(decimalPerc, MathContext.DECIMAL64);
+                    clearBuffer();
+                    buffer.append(rhs.toString());
+
+                    display(oldText, rhs.toString());
+                    break;
+
+            }
+
+            Log.i(TAG, "State Change: " + state);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            lhs = null;
+            rhs = null;
+            result = null;
+            state = CalculatorState.ERROR;
+            display("", ERROR);
+            Log.i(TAG, "State Change: " + state);
+        }
 
     }
 
