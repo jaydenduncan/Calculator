@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
 
         /* Associate Click Handler with Input Buttons */
 
-        DefaultClickHandler click = new DefaultClickHandler();
+        CalculatorClickHandler click = new CalculatorClickHandler();
         ConstraintLayout layout = binding.layout;
 
         for (int i = 0; i < layout.getChildCount(); ++i) {
@@ -84,12 +84,14 @@ public class MainActivity extends AppCompatActivity implements AbstractView {
 
     }
 
-    class DefaultClickHandler implements View.OnClickListener {
+    class CalculatorClickHandler implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
 
-            //INSERT CODE HERE
+            String tag = ((Button) v).getTag().toString();
+
+            controller.changeScreen(tag);
 
         }
 
