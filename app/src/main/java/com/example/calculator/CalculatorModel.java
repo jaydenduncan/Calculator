@@ -11,6 +11,7 @@ public class CalculatorModel extends AbstractModel {
 
     public static final String TAG = "CalculatorModel";
     public static final String ERROR = "ERROR";
+    private static final int MAX_DEVICE_WIDTH = 27;
 
     private StringBuilder buffer;
     private CalculatorState state;
@@ -50,7 +51,8 @@ public class CalculatorModel extends AbstractModel {
 
         if(keyMap.containsKey(tag)){
             // append appropriate digit to screen
-            setKey(keyMap.get(tag));
+            if(buffer.toString().length() <= (MAX_DEVICE_WIDTH - 1))
+                setKey(keyMap.get(tag));
         }
         else if(functionMap.containsKey(tag)){
             // set appropriate function
